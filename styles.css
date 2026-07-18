@@ -1539,6 +1539,27 @@ details[open].lunar-sensor-accordion summary::after, details[open].significance-
 
 /* Mobile Viewport Cockpit Optimization Overrides */
 @media (max-width: 480px) {
+  .glass-panel {
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  .login-tabs {
+    margin-bottom: 28px !important;
+  }
+
+  details.lunar-sensor-accordion {
+    margin-bottom: 22px !important;
+  }
+
+  details.significance-panel-accordion {
+    margin-bottom: 28px !important;
+  }
+
+  #login-form {
+    margin-top: 10px !important;
+  }
+
   .moon-badge {
     width: 55px;
     height: 55px;

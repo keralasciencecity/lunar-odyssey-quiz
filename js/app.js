@@ -1300,9 +1300,44 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (state.score >= 11) rank = "LUNAR EXPLORER";
     else if (state.score >= 5) rank = "LUNAR NAVIGATOR";
 
-    const customText = `I just achieved the rank of ${rank} (scoring ${state.score}/${state.attempted}) in the Moon Day Online Quiz 2026 organized by Science City Kottayam & Aastro Kerala! 🚀 Check out my Lunar Pilot credentials badge and try it yourself: ${window.location.href}`;
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(customText)}`;
-    window.open(url, "_blank");
+    const customText = `I completed the Moon Day Online Quiz 2026 and achieved the rank of ${rank} (score: ${state.score}/${state.attempted})! 🚀 Test your space coordinates and get your certificate badge here: ${window.location.origin}${window.location.pathname}`;
+
+    const canvas = document.getElementById("certificate-canvas");
+    if (!canvas) return;
+
+    // Show a loader indicator
+    const originalText = btnShareWhatsapp.innerHTML;
+    btnShareWhatsapp.innerHTML = `<span class="btn-text">🔄 PREPARING SHARE...</span>`;
+
+    canvas.toBlob((blob) => {
+      btnShareWhatsapp.innerHTML = originalText;
+      if (!blob) {
+        // Fallback to text link
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(customText)}`;
+        window.open(url, "_blank");
+        return;
+      }
+
+      const file = new File([blob], `Lunar_Pilot_Badge_${state.score}.png`, { type: 'image/png' });
+
+      // Try native sharing (Web Share API Level 2 - supports files)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'Lunar Pilot Credentials',
+          text: customText
+        })
+        .catch(err => {
+          console.warn("Share cancelled or failed, falling back to text-link:", err);
+          const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(customText)}`;
+          window.open(url, "_blank");
+        });
+      } else {
+        // Fallback to WhatsApp link
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(customText)}`;
+        window.open(url, "_blank");
+      }
+    }, 'image/png');
   });
 
   // --- DATABASE & LEADERBOARD SYNC ---

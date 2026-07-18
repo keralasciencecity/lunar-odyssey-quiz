@@ -86,47 +86,50 @@
         <!-- Registration & Significance View -->
         <div id="login-register-view" style="width: 100%">
           <!-- Interactive Moon Phase Telemetry Simulator -->
-          <div class="lunar-sensor-card">
-            <div class="sensor-header">
-              <span class="sensor-title">🌒 LUNAR TELEMETRY SENSOR</span>
-              <span class="sensor-status" id="sensor-date-display">LIVE DATA</span>
-            </div>
-            
-            <div class="sensor-body">
-              <div class="moon-phase-visual-container">
-                <canvas id="lunar-sensor-canvas" width="110" height="110"></canvas>
+          <details class="lunar-sensor-accordion" open>
+            <summary class="sensor-summary">🌒 LUNAR TELEMETRY SENSOR</summary>
+            <div class="sensor-content">
+              <div class="sensor-header-inline">
+                <span class="sensor-status" id="sensor-date-display">LIVE DATA</span>
+              </div>
+              <div class="sensor-body">
+                <div class="moon-phase-visual-container">
+                  <canvas id="lunar-sensor-canvas" width="110" height="110"></canvas>
+                </div>
+                
+                <div class="sensor-info">
+                  <div class="info-label">OBSERVED LUNAR PHASE</div>
+                  <div class="info-value text-cyan" id="sensor-phase-name">ESTABLISHING...</div>
+                  <div class="info-sub font-orbitron" id="sensor-illumination">0% ILLUMINATED</div>
+                  <div class="info-sub font-orbitron" id="sensor-cycle-day">CYCLE DAY: 0.0</div>
+                </div>
               </div>
               
-              <div class="sensor-info">
-                <div class="info-label">OBSERVED LUNAR PHASE</div>
-                <div class="info-value text-cyan" id="sensor-phase-name">ESTABLISHING...</div>
-                <div class="info-sub font-orbitron" id="sensor-illumination">0% ILLUMINATED</div>
-                <div class="info-sub font-orbitron" id="sensor-cycle-day">CYCLE DAY: 0.0</div>
+              <div class="sensor-slider-container">
+                <input type="range" min="0" max="100" value="50" class="sensor-slider" id="lunar-sensor-slider">
+                <div class="slider-labels font-orbitron">
+                  <span>NEW</span>
+                  <span>1ST QTR</span>
+                  <span>FULL</span>
+                  <span>3RD QTR</span>
+                  <span>NEW</span>
+                </div>
               </div>
             </div>
-            
-            <div class="sensor-slider-container">
-              <input type="range" min="0" max="100" value="50" class="sensor-slider" id="lunar-sensor-slider">
-              <div class="slider-labels font-orbitron">
-                <span>NEW</span>
-                <span>1ST QTR</span>
-                <span>FULL</span>
-                <span>3RD QTR</span>
-                <span>NEW</span>
-              </div>
-            </div>
-          </div>
+          </details>
 
           <!-- Moon Day Significance Panel -->
-          <div class="significance-panel">
-            <div class="significance-title">🌌 Why July 20 is Moon Day</div>
-            <p class="significance-text">
-              On <strong>July 20, 1969</strong>, humanity achieved the impossible. The Apollo 11 Lunar Module, <em>Eagle</em>, landed on the Sea of Tranquility. Neil Armstrong and Buzz Aldrin took the historic first footsteps on another celestial world, declaring: <em>"That's one small step for man, one giant leap for mankind."</em>
-            </p>
-            <p class="significance-text">
-              Today, as India's <strong>Chandrayaan</strong> missions search for water ice at the South Pole and NASA's <strong>Artemis</strong> program prepares to establish a permanent lunar base, July 20 serves as a reminder of our cosmic curiosity. Science City Kottayam and Aastro Kerala Kottayam Chapter invite you to test your space science navigation coordinates in this championship!
-            </p>
-          </div>
+          <details class="significance-panel-accordion" open>
+            <summary class="significance-summary">🌌 WHY JULY 20 IS MOON DAY</summary>
+            <div class="significance-content">
+              <p class="significance-text">
+                On <strong>July 20, 1969</strong>, humanity achieved the impossible. The Apollo 11 Lunar Module, <em>Eagle</em>, landed on the Sea of Tranquility. Neil Armstrong and Buzz Aldrin took the historic first footsteps on another celestial world, declaring: <em>"That's one small step for man, one giant leap for mankind."</em>
+              </p>
+              <p class="significance-text">
+                Today, as India's <strong>Chandrayaan</strong> missions search for water ice at the South Pole and NASA's <strong>Artemis</strong> program prepares to establish a permanent lunar base, July 20 serves as a reminder of our cosmic curiosity. Science City Kottayam and Aastro Kerala Kottayam Chapter invite you to test your space science navigation coordinates in this championship!
+              </p>
+            </div>
+          </details>
 
           <form id="login-form" novalidate>
             <div class="input-grid">

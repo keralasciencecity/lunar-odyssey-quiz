@@ -1736,6 +1736,15 @@ document.addEventListener("DOMContentLoaded", () => {
         lunarSlider.value = todayPct;
       }
       updateLunarSimulator(todayPct, true);
+      
+      // Auto-collapse cards on mobile screens to avoid screen clutter on start
+      const isMobile = window.innerWidth <= 480;
+      if (isMobile) {
+        const sensAccordion = document.querySelector(".lunar-sensor-accordion");
+        const sigAccordion = document.querySelector(".significance-panel-accordion");
+        if (sensAccordion) sensAccordion.removeAttribute("open");
+        if (sigAccordion) sigAccordion.removeAttribute("open");
+      }
     } catch(e) {
       console.error("Error setting live lunar phase:", e);
     }

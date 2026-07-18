@@ -1826,7 +1826,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const imgData = ctx.getImageData(0, 0, w, h);
       const pixels = imgData.data;
       
-      // 1. Scan column-by-column to find the white divider column
+      // 1. Scan column-by-column to find white/empty columns
       const whiteCols = [];
       for (let x = 0; x < w; x++) {
         let isWhite = true;
@@ -1845,13 +1845,17 @@ document.addEventListener("DOMContentLoaded", () => {
         whiteCols.push(isWhite);
       }
       
-      // Find longest run of white separator columns
+      // Find the divider: search only in the middle region (25% to 75% of width)
+      // to avoid detecting outer padding margins as the separator!
+      const startScan = Math.round(w * 0.25);
+      const endScan = Math.round(w * 0.75);
+      
       let longestRunStart = 0;
       let longestRunLength = 0;
       let currentRunStart = 0;
       let currentRunLength = 0;
       
-      for (let x = 0; x < w; x++) {
+      for (let x = startScan; x < endScan; x++) {
         if (whiteCols[x]) {
           if (currentRunLength === 0) {
             currentRunStart = x;
@@ -1867,7 +1871,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       
       let splitX = Math.round(w * 0.62);
-      if (longestRunLength > 5) {
+      if (longestRunLength > 2) {
         splitX = Math.round(longestRunStart + longestRunLength / 2);
       }
       

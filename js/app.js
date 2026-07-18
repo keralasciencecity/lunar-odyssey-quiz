@@ -896,6 +896,32 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fillText(`Date: July 20, 2026`, 70, 715);
       ctx.fillText(`Verification: SECURE CRYPTO SIGNATURES`, 70, 740);
       
+      // Draw official seals/logos on the certificate footer
+      if (window.logoImages && window.logoImages.loaded) {
+        ctx.save();
+        ctx.textAlign = "right";
+        ctx.font = "bold 10px 'Orbitron'";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.fillText("PRESENTED BY", 1120, 680);
+        ctx.restore();
+
+        if (window.logoImages.aastro.complete && window.logoImages.aastro.naturalWidth > 0) {
+          const logoA = window.logoImages.aastro;
+          const aspectA = logoA.naturalWidth / logoA.naturalHeight;
+          const drawH = 50;
+          const drawW = drawH * aspectA;
+          // Positioned on the right side footer
+          ctx.drawImage(logoA, 820, 705, drawW, drawH);
+        }
+        if (window.logoImages.ksstm.complete && window.logoImages.ksstm.naturalWidth > 0) {
+          const logoK = window.logoImages.ksstm;
+          const aspectK = logoK.naturalWidth / logoK.naturalHeight;
+          const drawH = 60;
+          const drawW = drawH * aspectK;
+          ctx.drawImage(logoK, 1120 - drawW, 700, drawW, drawH);
+        }
+      }
+      
       // 11. Right Side: Technical Rover Blueprint
       ctx.textAlign = "center";
       ctx.font = "800 12px 'Orbitron'";
@@ -1751,6 +1777,155 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initLiveLunarSensor();
+
+  // --- AUTOMATIC BRANDING LOGO SPLITTER & PROCESSOR ---
+  window.logoImages = {
+    aastro: new Image(),
+    ksstm: new Image(),
+    loaded: false
+  };
+
+  function processLogoPixels(canvas) {
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const pixels = imgData.data;
+    
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i+1];
+      const b = pixels[i+2];
+      const a = pixels[i+3];
+      
+      // Make white backgrounds fully transparent (white is > 220)
+      if (r > 220 && g > 220 && b > 220) {
+        pixels[i+3] = 0; // set alpha to transparent
+      } else if (a > 30 && r < 100 && g < 100 && b < 100) {
+        // Invert black text/lines to glowing off-white for dark telemetry theme
+        pixels[i] = 240;
+        pixels[i+1] = 248;
+        pixels[i+2] = 255;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  function splitAndProcessLogos() {
+    const img = new Image();
+    img.src = "assets/logos.png";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const w = img.width;
+      const h = img.height;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.drawImage(img, 0, 0);
+      
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const pixels = imgData.data;
+      
+      // 1. Scan column-by-column to find the white divider column
+      const whiteCols = [];
+      for (let x = 0; x < w; x++) {
+        let isWhite = true;
+        for (let y = 0; y < h; y++) {
+          const idx = (y * w + x) * 4;
+          const r = pixels[idx];
+          const g = pixels[idx+1];
+          const b = pixels[idx+2];
+          const a = pixels[idx+3];
+          // If opacity is present and pixel is not white
+          if (a > 10 && (r < 240 || g < 240 || b < 240)) {
+            isWhite = false;
+            break;
+          }
+        }
+        whiteCols.push(isWhite);
+      }
+      
+      // Find longest run of white separator columns
+      let longestRunStart = 0;
+      let longestRunLength = 0;
+      let currentRunStart = 0;
+      let currentRunLength = 0;
+      
+      for (let x = 0; x < w; x++) {
+        if (whiteCols[x]) {
+          if (currentRunLength === 0) {
+            currentRunStart = x;
+          }
+          currentRunLength++;
+          if (currentRunLength > longestRunLength) {
+            longestRunStart = currentRunStart;
+            longestRunLength = currentRunLength;
+          }
+        } else {
+          currentRunLength = 0;
+        }
+      }
+      
+      let splitX = Math.round(w * 0.62);
+      if (longestRunLength > 5) {
+        splitX = Math.round(longestRunStart + longestRunLength / 2);
+      }
+      
+      // 2. Crop & Process Aastro Kerala Logo (Left side)
+      let aastroLeft = 0;
+      while (aastroLeft < splitX && whiteCols[aastroLeft]) aastroLeft++;
+      let aastroRight = splitX;
+      while (aastroRight > aastroLeft && whiteCols[aastroRight - 1]) aastroRight--;
+      
+      const aastroW = aastroRight - aastroLeft;
+      if (aastroW > 10) {
+        const canvasAastro = document.createElement("canvas");
+        canvasAastro.width = aastroW;
+        canvasAastro.height = h;
+        const ctxA = canvasAastro.getContext("2d");
+        ctxA.drawImage(img, aastroLeft, 0, aastroW, h, 0, 0, aastroW, h);
+        processLogoPixels(canvasAastro);
+        
+        const aastroDataUrl = canvasAastro.toDataURL();
+        window.logoImages.aastro.src = aastroDataUrl;
+        
+        // Populate DOM images
+        const brandingA = document.getElementById("branding-logo-aastro");
+        if (brandingA) brandingA.src = aastroDataUrl;
+        const hudA = document.getElementById("hud-logo-aastro");
+        if (hudA) hudA.src = aastroDataUrl;
+      }
+      
+      // 3. Crop & Process KSSTM Logo (Right side)
+      let ksstmLeft = splitX;
+      while (ksstmLeft < w && whiteCols[ksstmLeft]) ksstmLeft++;
+      let ksstmRight = w;
+      while (ksstmRight > ksstmLeft && whiteCols[ksstmRight - 1]) ksstmRight--;
+      
+      const ksstmW = ksstmRight - ksstmLeft;
+      if (ksstmW > 10) {
+        const canvasKsstm = document.createElement("canvas");
+        canvasKsstm.width = ksstmW;
+        canvasKsstm.height = h;
+        const ctxK = canvasKsstm.getContext("2d");
+        ctxK.drawImage(img, ksstmLeft, 0, ksstmW, h, 0, 0, ksstmW, h);
+        processLogoPixels(canvasKsstm);
+        
+        const ksstmDataUrl = canvasKsstm.toDataURL();
+        window.logoImages.ksstm.src = ksstmDataUrl;
+        
+        // Populate DOM images
+        const brandingK = document.getElementById("branding-logo-ksstm");
+        if (brandingK) brandingK.src = ksstmDataUrl;
+        const hudK = document.getElementById("hud-logo-ksstm");
+        if (hudK) hudK.src = ksstmDataUrl;
+      }
+      
+      window.logoImages.loaded = true;
+    };
+  }
+
+  splitAndProcessLogos();
 
   // Load local rankings on start
   renderLeaderboardLocal();

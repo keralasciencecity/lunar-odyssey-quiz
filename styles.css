@@ -255,6 +255,58 @@ body::after {
   font-weight: 500;
 }
 
+/* Organizing Bodies Logo Branding */
+.branding-logos-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.theme-logo-aastro {
+  max-height: 48px;
+  width: auto;
+  filter: invert(1) brightness(2.5) contrast(1.1); /* Invert black text logo for dark theme */
+  opacity: 0.85;
+  transition: var(--transition-smooth);
+}
+
+.theme-logo-ksstm {
+  max-height: 52px;
+  width: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 5px rgba(6, 182, 212, 0.2));
+  transition: var(--transition-smooth);
+}
+
+.theme-logo-aastro:hover, .theme-logo-ksstm:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Arena Header elements */
+.arena-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto;
+  gap: 15px;
+}
+
+.arena-text-block {
+  flex: 1;
+  text-align: center;
+}
+
+.arena-header-logo {
+  max-height: 40px;
+  width: auto;
+}
+
 /* Welcome Box Elements */
 .welcome-box {
   display: flex;
@@ -1558,6 +1610,23 @@ details[open].lunar-sensor-accordion summary::after, details[open].significance-
 
   #login-form {
     margin-top: 10px !important;
+  }
+
+  .branding-logos-container {
+    gap: 20px;
+    margin-bottom: 18px;
+  }
+
+  .theme-logo-aastro {
+    max-height: 38px;
+  }
+
+  .theme-logo-ksstm {
+    max-height: 42px;
+  }
+
+  .arena-header-logo {
+    max-height: 28px;
   }
 
   .moon-badge {

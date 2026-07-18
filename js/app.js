@@ -1589,6 +1589,160 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- INTERACTIVE LUNAR PHASE SIMULATOR ---
+  function getLunarPhaseFromPct(pct) {
+    const cycle = 29.53059;
+    const age = (pct / 100) * cycle;
+    let phaseName = "";
+    let illumination = Math.round(50 * (1 - Math.cos((2 * Math.PI * age) / cycle)));
+    
+    if (age < 1.84 || age >= 27.68) {
+      phaseName = "New Moon";
+    } else if (age < 5.53) {
+      phaseName = "Waxing Crescent";
+    } else if (age < 9.22) {
+      phaseName = "First Quarter";
+    } else if (age < 12.91) {
+      phaseName = "Waxing Gibbous";
+    } else if (age < 16.61) {
+      phaseName = "Full Moon";
+    } else if (age < 20.30) {
+      phaseName = "Waning Gibbous";
+    } else if (age < 23.99) {
+      phaseName = "Third Quarter";
+    } else {
+      phaseName = "Waning Crescent";
+    }
+    
+    return { phaseName, illumination, age };
+  }
+
+  function drawSensorMoon(canvas, age) {
+    const ctx = canvas.getContext("2d");
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const r = canvas.width / 2 - 10;
+    const cycle = 29.53059;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Glow atmosphere
+    ctx.save();
+    let glowGrad = ctx.createRadialGradient(cx, cy, r - 5, cx, cy, r + 8);
+    glowGrad.addColorStop(0, "rgba(6, 182, 212, 0.15)");
+    glowGrad.addColorStop(1, "rgba(6, 182, 212, 0)");
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    
+    // 1. Shadowed moon disk (base)
+    ctx.fillStyle = "#161b22";
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 2. Draw illuminated part
+    ctx.save();
+    ctx.fillStyle = "#e2e8f0";
+    
+    const half = cycle / 2;
+    if (age <= half) {
+      // Waxing phases (Right side lit)
+      const pct = age / half;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI/2, Math.PI/2, false);
+      const ctrlX = cx + r * (1 - 2 * pct);
+      ctx.quadraticCurveTo(ctrlX, cy, cx, cy - r);
+      ctx.fill();
+    } else {
+      // Waning phases (Left side lit)
+      const pct = (age - half) / half;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, Math.PI/2, -Math.PI/2, false);
+      const ctrlX = cx - r * (1 - 2 * pct);
+      ctx.quadraticCurveTo(ctrlX, cy, cx, cy + r);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    // 3. Crater textures overlay
+    ctx.save();
+    ctx.globalCompositeOperation = "source-atop";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+    const craters = [
+      { x: -r * 0.4, y: -r * 0.2, cr: r * 0.15 },
+      { x: r * 0.3, y: r * 0.2, cr: r * 0.2 },
+      { x: -r * 0.1, y: r * 0.4, cr: r * 0.12 },
+      { x: r * 0.15, y: -r * 0.5, cr: r * 0.1 }
+    ];
+    craters.forEach(c => {
+      ctx.beginPath();
+      ctx.arc(cx + c.x, cy + c.y, c.cr, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+    
+    // 4. Outer rim line
+    ctx.strokeStyle = "rgba(6, 182, 212, 0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  function updateLunarSimulator(pct, isLive = false) {
+    const info = getLunarPhaseFromPct(pct);
+    const canvas = document.getElementById("lunar-sensor-canvas");
+    if (canvas) {
+      drawSensorMoon(canvas, info.age);
+    }
+    
+    const phaseNameEl = document.getElementById("sensor-phase-name");
+    const illuminationEl = document.getElementById("sensor-illumination");
+    const cycleDayEl = document.getElementById("sensor-cycle-day");
+    const dateDisplayEl = document.getElementById("sensor-date-display");
+    
+    if (phaseNameEl) phaseNameEl.textContent = info.phaseName.toUpperCase();
+    if (illuminationEl) illuminationEl.textContent = `${info.illumination}% ILLUMINATED`;
+    if (cycleDayEl) cycleDayEl.textContent = `CYCLE DAY: ${info.age.toFixed(1)}`;
+    if (dateDisplayEl) {
+      dateDisplayEl.textContent = isLive ? "LIVE DATA" : "SIMULATION";
+      dateDisplayEl.style.color = isLive ? "var(--accent-green)" : "var(--accent-cyan)";
+      dateDisplayEl.style.borderColor = isLive ? "var(--accent-green)" : "var(--accent-cyan)";
+    }
+  }
+
+  // Bind slider
+  const lunarSlider = document.getElementById("lunar-sensor-slider");
+  if (lunarSlider) {
+    lunarSlider.addEventListener("input", (e) => {
+      updateLunarSimulator(parseFloat(e.target.value), false);
+    });
+  }
+
+  // Auto-sync live phase on load
+  function initLiveLunarSensor() {
+    try {
+      const today = new Date();
+      const refDate = new Date(Date.UTC(2023, 0, 7, 23, 8, 0));
+      const diffDays = (today.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24);
+      const cycle = 29.53059;
+      const todayAge = (diffDays % cycle + cycle) % cycle;
+      const todayPct = (todayAge / cycle) * 100;
+      
+      if (lunarSlider) {
+        lunarSlider.value = todayPct;
+      }
+      updateLunarSimulator(todayPct, true);
+    } catch(e) {
+      console.error("Error setting live lunar phase:", e);
+    }
+  }
+
+  initLiveLunarSensor();
+
   // Load local rankings on start
   renderLeaderboardLocal();
 });

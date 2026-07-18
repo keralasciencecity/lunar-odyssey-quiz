@@ -85,6 +85,38 @@
         
         <!-- Registration & Significance View -->
         <div id="login-register-view" style="width: 100%">
+          <!-- Interactive Moon Phase Telemetry Simulator -->
+          <div class="lunar-sensor-card">
+            <div class="sensor-header">
+              <span class="sensor-title">🌒 LUNAR TELEMETRY SENSOR</span>
+              <span class="sensor-status" id="sensor-date-display">LIVE DATA</span>
+            </div>
+            
+            <div class="sensor-body">
+              <div class="moon-phase-visual-container">
+                <canvas id="lunar-sensor-canvas" width="110" height="110"></canvas>
+              </div>
+              
+              <div class="sensor-info">
+                <div class="info-label">OBSERVED LUNAR PHASE</div>
+                <div class="info-value text-cyan" id="sensor-phase-name">ESTABLISHING...</div>
+                <div class="info-sub font-orbitron" id="sensor-illumination">0% ILLUMINATED</div>
+                <div class="info-sub font-orbitron" id="sensor-cycle-day">CYCLE DAY: 0.0</div>
+              </div>
+            </div>
+            
+            <div class="sensor-slider-container">
+              <input type="range" min="0" max="100" value="50" class="sensor-slider" id="lunar-sensor-slider">
+              <div class="slider-labels font-orbitron">
+                <span>NEW</span>
+                <span>1ST QTR</span>
+                <span>FULL</span>
+                <span>3RD QTR</span>
+                <span>NEW</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Moon Day Significance Panel -->
           <div class="significance-panel">
             <div class="significance-title">🌌 Why July 20 is Moon Day</div>

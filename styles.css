@@ -409,7 +409,168 @@ body::after {
   50% { opacity: 1; }
 }
 
+/* Interactive Moon Phase Sensor Card */
+.lunar-sensor-card {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 25px;
+  max-width: 680px;
+  box-sizing: border-box;
+  animation: scaleIn 0.5s ease;
+  width: 100%;
+}
 
+.sensor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--panel-border);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.sensor-title {
+  font-family: var(--font-hud);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+}
+
+.sensor-status {
+  font-family: var(--font-hud);
+  font-size: 0.65rem;
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.sensor-body {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.moon-phase-visual-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  padding: 8px;
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  box-shadow: inset 0 0 15px rgba(6, 182, 212, 0.1);
+  width: 110px;
+  height: 110px;
+  box-sizing: border-box;
+}
+
+.sensor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.info-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-family: var(--font-hud);
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.25);
+}
+
+.info-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.sensor-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Custom styled Range Slider */
+.sensor-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  border: 1px solid var(--panel-border);
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+.sensor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px var(--accent-cyan);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.sensor-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.sensor-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px var(--accent-cyan);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.sensor-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+/* Mobile responsive fixes for simulator */
+@media (max-width: 480px) {
+  .sensor-body {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  .sensor-info {
+    text-align: center;
+  }
+}
 
 .significance-panel {
   background: rgba(6, 182, 212, 0.02);

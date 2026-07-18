@@ -787,47 +787,56 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // 6. Header Agency Text
       ctx.textAlign = "left";
-      ctx.font = "bold 20px 'Orbitron'";
-      ctx.fillStyle = "#f3f4f6";
-      ctx.fillText("LUNAR ODYSSEY 2026", 70, 85);
+      ctx.font = "bold 22px 'Orbitron'";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText("MOON DAY ONLINE CHAMPIONSHIP 2026", 70, 80);
+      
+      ctx.font = "800 10px 'Orbitron'";
+      ctx.fillStyle = "#06b6d4";
+      ctx.fillText("LUNAR ODYSSEY NAVIGATION TELEMETRY", 70, 100);
       
       ctx.font = "600 12px 'Outfit'";
       ctx.fillStyle = "#9ca3af";
-      ctx.fillText("SCIENCE CITY KOTTAYAM  x  AASTRO KERALA", 70, 105);
+      ctx.fillText("JOINTLY PRESENTED BY SCIENCE CITY KOTTAYAM & AASTRO KERALA, KOTTAYAM CHAPTER", 70, 120);
       
       // Space Agency Circular Mission Patch logo (Upper Right)
       drawMissionPatch(ctx, canvas.width - 120, 95);
       
       // Divider line
-      ctx.strokeStyle = "rgba(255,255,255,0.1)";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(6, 182, 212, 0.2)";
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(70, 125);
-      ctx.lineTo(canvas.width - 70, 125);
+      ctx.moveTo(70, 140);
+      ctx.lineTo(canvas.width - 70, 140);
       ctx.stroke();
       
       // 7. Pilot Avatar/ID Box
-      drawAstronautAvatar(ctx, 70, 170, 180, 220);
+      drawAstronautAvatar(ctx, 70, 180, 180, 220);
       
       // 8. Pilot Info
       ctx.textAlign = "left";
       ctx.font = "800 13px 'Orbitron'";
       ctx.fillStyle = "#06b6d4";
-      ctx.fillText("PILOT CREDENTIALS", 280, 185);
+      ctx.fillText("MISSION PILOT CREDENTIALS", 280, 195);
       
-      ctx.font = "700 28px 'Outfit'";
+      ctx.font = "700 32px 'Outfit'";
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(state.user.name.toUpperCase(), 280, 225);
+      ctx.fillText(state.user.name.toUpperCase(), 280, 235);
       
       ctx.font = "500 14px 'Outfit'";
       ctx.fillStyle = "#9ca3af";
-      ctx.fillText(`SECTOR / PLACE: ${state.user.place.toUpperCase()}`, 280, 260);
-      ctx.fillText(`MISSION CAT: ${state.user.category.toUpperCase()} PILOT`, 280, 285);
-      ctx.fillText(`ACCESS LEVEL: ${accessLevel}`, 280, 310);
+      ctx.fillText(`SECTOR / PLACE: ${state.user.place.toUpperCase()}`, 280, 270);
+      ctx.fillText(`CHAMPIONSHIP CATEGORY: ${state.user.category.toUpperCase()} PILOT`, 280, 295);
+      ctx.fillText(`ACCESS AUTHORIZATION: ${accessLevel}`, 280, 320);
       
       ctx.font = "400 12px 'Orbitron'";
       ctx.fillStyle = "rgba(6, 182, 212, 0.7)";
-      ctx.fillText(`SERIAL NO: ${randomSerial}`, 280, 345);
+      ctx.fillText(`SYSTEM REGISTRATION SERIAL: ${randomSerial}`, 280, 350);
+      
+      // Certification statement
+      ctx.font = "italic 13px 'Outfit'";
+      ctx.fillStyle = "#e5e7eb";
+      ctx.fillText("Has successfully completed the space science navigation and speed quiz module.", 280, 390);
       
       // 9. Telemetry Stats Box
       ctx.fillStyle = "rgba(255, 255, 255, 0.02)";

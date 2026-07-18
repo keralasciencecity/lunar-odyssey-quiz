@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moon Day Quiz 2026 - Science City Kottayam & Aastro Kerala</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Participate in the interactive Moon Day Online Quiz 2026, organized by Science City Kottayam and Aastro Kerala (Kottayam Chapter). Test your space knowledge, beat the clock, and get a shareable certificate.">
+  <meta name="keywords" content="Moon Day, Space Quiz, Science City Kottayam, Aastro Kerala, Chandrayaan, Apollo 11, Lunar quiz">
+  <meta name="author" content="Science City Kottayam & Aastro Kerala Kottayam">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Starfield background (animated via JS canvas) -->
+  <canvas id="starfield"></canvas>
+  
+  <!-- Moon Graphic Glow (background ambient decoration) -->
+  <div class="ambient-moon"></div>
+  
+  <div class="app-container">
+    
+    <!-- HEADER (Visible on Login and Leaderboard screens) -->
+    <header class="quiz-header" id="main-header">
+      <div class="logos-container">
+        <div class="logo-text">
+          <span class="logo-primary">SCIENCE CITY</span>
+          <span class="logo-sub">Kottayam</span>
+        </div>
+        <div class="logo-divider"></div>
+        <div class="logo-text">
+          <span class="logo-primary">AASTRO KERALA</span>
+          <span class="logo-sub">Kottayam Chapter</span>
+        </div>
+        <div class="logo-divider"></div>
+        <button type="button" id="btn-mute" class="btn-mute-toggle" title="Toggle Audio Feedback">🔊</button>
+      </div>
+    </header>
+
+    <!-- SCREEN 1: LOGIN / WELCOME -->
+    <section id="screen-login" class="screen active">
+      <div class="welcome-box glass-panel">
+        <div class="moon-badge">
+          <svg viewBox="0 0 100 100" class="badge-svg">
+            <path d="M 50 10 A 40 40 0 1 0 90 50 A 30 30 0 1 1 50 10 Z" fill="#e0e6ed" filter="url(#glow)"/>
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        
+        <h1 class="glow-text">LUNAR ODYSSEY</h1>
+        <p class="subtitle">Moon Day Online Championship 2026</p>
+        
+        <!-- Status LEDs -->
+        <div class="status-panel">
+          <div class="status-item"><span class="led led-green"></span> SYS: LOCK</div>
+          <div class="status-item"><span class="led led-green"></span> ROVER: ONLINE</div>
+          <div class="status-item"><span class="led led-cyan animate-pulse"></span> TELEM: ACTIVE</div>
+        </div>
+
+        <p class="welcome-desc">Embark on a 2-minute lunar navigation mission. Answer as many questions as you can. Avoid changing tabs or exiting the browser window, as active AI/Anti-Cheat telemetric sensors are active.</p>
+        
+        <div class="login-tabs">
+          <button type="button" class="login-tab active" id="tab-show-register">PILOT REGISTRATION</button>
+          <button type="button" class="login-tab" id="tab-show-leaderboard">MISSION LEADERBOARD</button>
+        </div>
+        
+        <!-- Registration & Significance View -->
+        <div id="login-register-view" style="width: 100%">
+          <!-- Moon Day Significance Panel -->
+          <div class="significance-panel">
+            <div class="significance-title">🌌 Why July 20 is Moon Day</div>
+            <p class="significance-text">
+              On <strong>July 20, 1969</strong>, humanity achieved the impossible. The Apollo 11 Lunar Module, <em>Eagle</em>, landed on the Sea of Tranquility. Neil Armstrong and Buzz Aldrin took the historic first footsteps on another celestial world, declaring: <em>"That's one small step for man, one giant leap for mankind."</em>
+            </p>
+            <p class="significance-text">
+              Today, as India's <strong>Chandrayaan</strong> missions search for water ice at the South Pole and NASA's <strong>Artemis</strong> program prepares to establish a permanent lunar base, July 20 serves as a reminder of our cosmic curiosity. Science City Kottayam and Aastro Kerala invite you to test your space science navigation coordinates in this championship!
+            </p>
+          </div>
+
+          <form id="login-form" novalidate>
+            <div class="input-grid">
+              <div class="input-group">
+                <label for="input-name">Full Name</label>
+                <input type="text" id="input-name" required placeholder="Enter your full name">
+                <span class="error-msg" id="err-name">Name is required</span>
+              </div>
+              
+              <div class="input-group">
+                <label for="input-email">Email Address</label>
+                <input type="email" id="input-email" required placeholder="name@example.com">
+                <span class="error-msg" id="err-email">Valid email is required</span>
+              </div>
+
+              <div class="input-group">
+                <label for="input-phone">Phone Number</label>
+                <input type="tel" id="input-phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}">
+                <span class="error-msg" id="err-phone">Valid 10-digit number is required</span>
+              </div>
+
+              <div class="input-group">
+                <label for="input-place">Place / School / Organization</label>
+                <input type="text" id="input-place" required placeholder="e.g. Kottayam">
+                <span class="error-msg" id="err-place">Place or Institution is required</span>
+              </div>
+            </div>
+
+            <div class="category-section">
+              <label class="section-label">Select Age Category</label>
+              <div class="category-cards">
+                <label class="category-card" for="cat-junior">
+                  <input type="radio" name="category" id="cat-junior" value="junior" checked>
+                  <div class="card-content">
+                    <div class="card-icon">🚀</div>
+                    <div class="card-title">JUNIOR</div>
+                    <div class="card-age">Age 15 & Under</div>
+                    <div class="card-desc">Basic facts, Apollo 11, and Chandrayaan missions.</div>
+                  </div>
+                </label>
+                
+                <label class="category-card" for="cat-senior">
+                  <input type="radio" name="category" id="cat-senior" value="senior">
+                  <div class="card-content">
+                    <div class="card-icon">🛰️</div>
+                    <div class="card-title">SENIOR</div>
+                    <div class="card-age">Age 16 & Above</div>
+                    <div class="card-desc">Advanced astrophysics, history, and orbital science.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="terms-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="agree-rules" required>
+                <span class="checkmark"></span>
+                I agree to the rules: No tab switching, no external aid. I understand my score will be disqualified if cheating is detected.
+              </label>
+              <span class="error-msg" id="err-rules">You must agree to the rules to start.</span>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btn-start">
+              <span class="btn-text">LAUNCH MISSION</span>
+              <span class="btn-glow"></span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Leaderboard View -->
+        <div id="login-leaderboard-view" class="display-none" style="width: 100%">
+          <h2 class="glow-text text-cyan" style="font-size: 1.4rem; margin-top: 10px;">GLOBAL LEADERBOARD</h2>
+          <p class="subtitle" style="font-size: 0.8rem; margin-bottom: 20px;">Top astronauts sorted by score and speed</p>
+
+          <div class="leaderboard-tabs">
+            <button type="button" class="tab-btn active" id="login-tab-junior">JUNIOR</button>
+            <button type="button" class="tab-btn" id="login-tab-senior">SENIOR</button>
+          </div>
+
+          <div class="leaderboard-list-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th style="width: 10%">Rank</th>
+                  <th style="width: 50%">Astronaut</th>
+                  <th style="width: 25%">Place</th>
+                  <th style="width: 15%">Score</th>
+                </tr>
+              </thead>
+              <tbody id="login-leaderboard-rows">
+                <!-- Data populated dynamically -->
+                <tr>
+                  <td colspan="4" class="text-center">Establishing telemetry...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: QUIZ ARENA -->
+    <section id="screen-quiz" class="screen">
+      <div class="quiz-hud glass-panel">
+        <div class="hud-item category-badge">
+          <span class="hud-label">MISSION STATUS</span>
+          <span class="hud-value highlight-cyan" id="hud-category">JUNIOR APEX</span>
+          <div class="status-panel-hud">
+            <span class="led led-green"></span> SYS: OK
+            <span class="led led-cyan animate-pulse"></span> RX: SYNC
+          </div>
+        </div>
+        
+        <div class="hud-item timer-hud">
+          <div class="timer-container">
+            <svg class="timer-svg" viewBox="0 0 36 36">
+              <path class="timer-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="timer-progress" id="timer-bar" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div class="timer-text font-orbitron" id="timer-display">120</div>
+          </div>
+        </div>
+
+        <div class="hud-item score-hud">
+          <span class="hud-label">CORRECT RUNS</span>
+          <div class="score-row">
+            <span class="hud-value font-orbitron highlight-gold" id="hud-score">00</span>
+            <button type="button" class="btn-mute-toggle-hud" id="btn-mute-hud" title="Toggle Audio Feedback">🔊</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-body glass-panel">
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="quiz-progress-indicator" style="width: 0%"></div>
+        </div>
+        
+        <div class="question-header">
+          <span class="question-number font-orbitron" id="question-index-label">QUESTION 01</span>
+        </div>
+        
+        <h2 class="question-text" id="question-text">Loading question coordinates...</h2>
+        
+        <div class="options-container" id="options-grid">
+          <button class="option-btn" data-index="0">
+            <span class="option-letter font-orbitron">A</span>
+            <span class="option-text">Option 1</span>
+          </button>
+          <button class="option-btn" data-index="1">
+            <span class="option-letter font-orbitron">B</span>
+            <span class="option-text">Option 2</span>
+          </button>
+          <button class="option-btn" data-index="2">
+            <span class="option-letter font-orbitron">C</span>
+            <span class="option-text">Option 3</span>
+          </button>
+          <button class="option-btn" data-index="3">
+            <span class="option-letter font-orbitron">D</span>
+            <span class="option-text">Option 4</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Live cheat alert status overlay (non-intrusive bottom banner) -->
+      <div class="cheat-warning-banner" id="cheat-toast">
+        ⚠️ TELEMETRY WARN: Tab switch detected. Capsule lock down triggered! Next switch aborts mission.
+      </div>
+    </section>
+
+    <!-- SCREEN 3: MISSON ABORTED (DISQUALIFIED) -->
+    <section id="screen-dq" class="screen">
+      <div class="welcome-box glass-panel border-red">
+        <div class="disqualified-icon">🚨</div>
+        <h1 class="glow-text text-red">MISSION ABORTED</h1>
+        <p class="subtitle text-light-red">Anti-Cheat System Triggered</p>
+        
+        <div class="dq-details">
+          <p>The system detected multiple violations of the navigation rules (such as switching browser tabs, exiting full screen, or opening external tools).</p>
+          <p>To preserve integrity, your session has been closed.</p>
+        </div>
+
+        <button class="btn-primary btn-red" onclick="window.location.reload()">
+          <span class="btn-text">RETRY MISSION</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: RESULTS & CERTIFICATE -->
+    <section id="screen-results" class="screen">
+      <div class="results-container">
+        
+        <!-- Summary Stats Card -->
+        <div class="summary-card glass-panel">
+          <h1 class="glow-text text-green">MISSION ACCOMPLISHED</h1>
+          <p class="subtitle">Flight Telemetry Analysed</p>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value highlight-cyan" id="res-category">Senior</span>
+              <span class="stat-label">Category</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value highlight-gold font-orbitron" id="res-score">18</span>
+              <span class="stat-label">Score (Correct)</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value font-orbitron" id="res-attempted">20</span>
+              <span class="stat-label">Questions Attempted</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value font-orbitron" id="res-accuracy">90%</span>
+              <span class="stat-label">Accuracy</span>
+            </div>
+          </div>
+
+          <div class="cheat-notif success-notif" id="res-cheat-status">
+            ✅ Telemetry clean. No cheating attempts detected.
+          </div>
+        </div>
+
+        <!-- Mission Badge Rendering Segment -->
+        <div class="certificate-card glass-panel">
+          <h3>YOUR MISSION ID BADGE</h3>
+          <p class="certificate-caption">Generate and download your official Lunar Explorer Pilot Credentials.</p>
+          
+          <!-- Hidden canvas for rendering certificate -->
+          <canvas id="certificate-canvas" width="1200" height="850" style="display: none;"></canvas>
+          
+          <!-- Certificate preview image container -->
+          <div class="certificate-preview-container">
+            <img id="certificate-preview-img" src="" alt="Lunar Pilot Credentials Badge Preview">
+            <div class="loading-overlay" id="cert-loading">Assembling mission credentials badge...</div>
+          </div>
+          
+          <div class="share-actions">
+            <button class="btn-primary" id="btn-download-cert">
+              <span class="btn-text">📥 DOWNLOAD BADGE (PNG)</span>
+            </button>
+            <button class="btn-secondary" id="btn-share-whatsapp">
+              <span class="btn-text">💬 SHARE ON WHATSAPP</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Leaderboard Segment -->
+        <div class="leaderboard-card glass-panel">
+          <h2 class="glow-text text-cyan">GLOBAL LEADERBOARD</h2>
+          <p class="subtitle">Top astronauts sorted by score and speed</p>
+
+          <div class="leaderboard-tabs">
+            <button class="tab-btn active" id="tab-junior" onclick="switchLeaderboardTab('junior')">JUNIOR</button>
+            <button class="tab-btn" id="tab-senior" onclick="switchLeaderboardTab('senior')">SENIOR</button>
+          </div>
+
+          <div class="leaderboard-list-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th style="width: 10%">Rank</th>
+                  <th style="width: 50%">Astronaut</th>
+                  <th style="width: 25%">Place</th>
+                  <th style="width: 15%">Score</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-rows">
+                <!-- Leaderboard data populated by JS -->
+                <tr>
+                  <td colspan="4" class="text-center">Loading leaderboard data...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <button class="btn-secondary text-center margin-top" onclick="window.location.reload()">
+            <span class="btn-text">🔄 TAKE QUIZ AGAIN</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

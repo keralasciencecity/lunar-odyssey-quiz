@@ -320,6 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cheatCount: 0,
     cheated: false,
     quizActive: false,
+    monitoringActive: false,
     leaderboard: { junior: [], senior: [] },
     activeTab: "junior"
   };
@@ -464,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleVisibilityViolation() {
-    if (!state.quizActive) return;
+    if (!state.quizActive || !state.monitoringActive) return;
     
     state.cheatCount++;
     if (state.cheatCount === 1) {
@@ -532,6 +533,7 @@ document.addEventListener("DOMContentLoaded", () => {
     state.cheatCount = 0;
     state.cheated = false;
     state.quizActive = true;
+    state.monitoringActive = false; // Start on cooldown
     
     // Load and shuffle questions
     const sourcePool = window.MOON_QUIZ_QUESTIONS[state.user.category];
@@ -555,6 +557,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Start Countdown Timer
     startTimer();
+
+    // Enable anti-cheat system after 2 seconds to bypass initial keyboard/focus shifts
+    setTimeout(() => {
+      if (state.quizActive) {
+        state.monitoringActive = true;
+      }
+    }, 2000);
   }
 
   function startTimer() {

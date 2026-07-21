@@ -1457,25 +1457,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const uniqueStudents = Array.from(studentMap.values());
     
     uniqueStudents.sort((a, b) => {
-      if (mode === "first") {
-        // First Attempt Mode: Primary is highest score among 1st attempts, then fewest attempts
-        if (b.score !== a.score) {
-          return b.score - a.score;
-        }
-        if (a.attempted !== b.attempted) {
-          return a.attempted - b.attempted;
-        }
-        return new Date(a.timestamp) - new Date(b.timestamp);
-      } else {
-        // Best Attempt Mode: Primary is highest score, then fewest attempts
-        if (b.score !== a.score) {
-          return b.score - a.score;
-        }
-        if (a.attempted !== b.attempted) {
-          return a.attempted - b.attempted;
-        }
-        return new Date(a.timestamp) - new Date(b.timestamp);
+      const accA = a.accuracy !== undefined ? a.accuracy : (a.attempted > 0 ? (a.score / a.attempted) : 0);
+      const accB = b.accuracy !== undefined ? b.accuracy : (b.attempted > 0 ? (b.score / b.attempted) : 0);
+
+      if (b.score !== a.score) {
+        return b.score - a.score;
       }
+      if (Math.abs(accB - accA) > 0.001) {
+        return accB - accA;
+      }
+      if (a.attempted !== b.attempted) {
+        return a.attempted - b.attempted;
+      }
+      return new Date(a.timestamp) - new Date(b.timestamp);
     });
     
     return uniqueStudents;
@@ -1578,7 +1572,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = state.leaderboard[category] || [];
     
     if (list.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" class="text-center">No telemetry records found. Be the first to establish coordinates!</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center">No telemetry records found. Be the first to establish coordinates!</td></tr>`;
       return;
     }
     
@@ -1589,6 +1583,12 @@ document.addEventListener("DOMContentLoaded", () => {
       else if (rank === 2) badgeClass = "rank-2";
       else if (rank === 3) badgeClass = "rank-3";
       
+      const acc = entry.accuracy !== undefined ? entry.accuracy : (entry.attempted > 0 ? Math.round((entry.score / entry.attempted) * 100) : 0);
+      let accColor = "var(--neon-cyan)";
+      if (acc >= 75) accColor = "#22c55e"; // Green for high accuracy
+      else if (acc >= 50) accColor = "#eab308"; // Yellow for medium accuracy
+      else accColor = "#ef4444"; // Red for low/spam accuracy
+      
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><span class="rank-badge ${badgeClass}">${rank}</span></td>
@@ -1596,7 +1596,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="astronaut-name">${escapeHTML(entry.name)}</div>
         </td>
         <td><span class="astronaut-place">${escapeHTML(entry.place || "N/A")}</span></td>
-        <td><span class="astronaut-score">${entry.score} pts <span style="font-size:0.75rem;color:var(--text-secondary)">(${entry.attempted} att)</span></span></td>
+        <td><span class="astronaut-score">${entry.score} pts</span></td>
+        <td><span class="accuracy-badge" style="color:${accColor};font-weight:600">${acc}%</span></td>
       `;
       tbody.appendChild(tr);
     });

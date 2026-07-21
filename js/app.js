@@ -1413,19 +1413,11 @@ document.addEventListener("DOMContentLoaded", () => {
       let rawScore = Number(entry.score) || 0;
       let attempted = Number(entry.attempted) || 1;
       
-      // Normalize score if cumulative: a single quiz has 20 questions max.
-      let singleScore = rawScore;
-      if (singleScore > 20) {
-        let estimatedRuns = Math.max(1, Math.round(attempted / 12));
-        singleScore = Math.min(20, Math.round(rawScore / estimatedRuns));
-      }
-      singleScore = Math.min(20, Math.max(0, singleScore));
-      
       const normalizedEntry = {
         name: entry.name,
         place: entry.place,
         category: entry.category,
-        score: singleScore,
+        score: rawScore,
         attempted: attempted,
         cheated: !!entry.cheated,
         timestamp: entry.timestamp || new Date().toISOString()

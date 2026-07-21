@@ -2,7 +2,7 @@
 const CONFIG = {
   // Enter your deployed Google Apps Script URL here:
   // e.g. "https://script.google.com/macros/s/.../exec"
-  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbw6u4mpbU2Sb5kfx2Gx4X4WNFvMuU2ZHavD73nbzI6tKqQH5bh1RLONJvSMWfcy9J5U/exec", 
+  GOOGLE_SHEETS_URL: "https://script.google.com/macros/s/AKfycbzrWbVzp9JhXYBqEE6qke6wFkWWHiFECJ_FdqKdlfvdb8SIOdQgmt194uZ51yQG6vFg/exec", 
 
   QUIZ_DURATION_SECONDS: 120, // 2 minutes
   

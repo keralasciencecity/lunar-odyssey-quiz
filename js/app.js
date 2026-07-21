@@ -1481,11 +1481,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function processLeaderboardData() {
     const mode = state.leaderboardMode || "first";
-    const juniorRaw = state.rawLeaderboard.junior || [];
-    const seniorRaw = state.rawLeaderboard.senior || [];
+    const raw = state.rawLeaderboard || {};
     
-    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorRaw, mode).slice(0, 20);
-    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorRaw, mode).slice(0, 20);
+    if (mode === "first") {
+      state.leaderboard.junior = (raw.juniorFirst && raw.juniorFirst.length > 0) ? raw.juniorFirst : deduplicateAndSortLeaderboard(raw.junior || [], "first").slice(0, 20);
+      state.leaderboard.senior = (raw.seniorFirst && raw.seniorFirst.length > 0) ? raw.seniorFirst : deduplicateAndSortLeaderboard(raw.senior || [], "first").slice(0, 20);
+    } else {
+      state.leaderboard.junior = (raw.juniorBest && raw.juniorBest.length > 0) ? raw.juniorBest : deduplicateAndSortLeaderboard(raw.junior || [], "best").slice(0, 20);
+      state.leaderboard.senior = (raw.seniorBest && raw.seniorBest.length > 0) ? raw.seniorBest : deduplicateAndSortLeaderboard(raw.senior || [], "best").slice(0, 20);
+    }
     
     renderLeaderboardTable();
   }

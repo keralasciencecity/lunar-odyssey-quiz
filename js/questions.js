@@ -18,6 +18,13 @@
     }
   }
 
-  window.JUNIOR_QUESTIONS = _decode(_qData.junior);
-  window.SENIOR_QUESTIONS = _decode(_qData.senior);
+  const junior = _decode(_qData.junior);
+  const senior = _decode(_qData.senior);
+
+  window.JUNIOR_QUESTIONS = junior;
+  window.SENIOR_QUESTIONS = senior;
+  window.MOON_QUIZ_QUESTIONS = {
+    junior: junior,
+    senior: senior
+  };
 })();

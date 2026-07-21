@@ -1474,8 +1474,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       if (data.status === "success" && data.leaderboard) {
-        state.leaderboard.junior = deduplicateAndSortLeaderboard(data.leaderboard.junior || []).slice(0, 10);
-        state.leaderboard.senior = deduplicateAndSortLeaderboard(data.leaderboard.senior || []).slice(0, 10);
+        state.leaderboard.junior = deduplicateAndSortLeaderboard(data.leaderboard.junior || []).slice(0, 20);
+        state.leaderboard.senior = deduplicateAndSortLeaderboard(data.leaderboard.senior || []).slice(0, 20);
         renderLeaderboardTable();
       } else {
         renderLeaderboardLocal();
@@ -1519,8 +1519,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const juniorList = localData.filter(e => e.category === "junior");
     const seniorList = localData.filter(e => e.category === "senior");
     
-    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorList).slice(0, 10);
-    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorList).slice(0, 10);
+    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorList).slice(0, 20);
+    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorList).slice(0, 20);
     
     renderLeaderboardTable();
   }

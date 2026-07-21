@@ -1572,7 +1572,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const list = state.leaderboard[category] || [];
     
     if (list.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="text-center">No telemetry records found. Be the first to establish coordinates!</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center">No telemetry records found. Be the first to establish coordinates!</td></tr>`;
       return;
     }
     
@@ -1597,6 +1597,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </td>
         <td><span class="astronaut-place">${escapeHTML(entry.place || "N/A")}</span></td>
         <td><span class="astronaut-score">${entry.score} pts</span></td>
+        <td><span style="font-size:0.85rem;color:var(--text-secondary);font-weight:500">${entry.attempted} Qs</span></td>
         <td><span class="accuracy-badge" style="color:${accColor};font-weight:600">${acc}%</span></td>
       `;
       tbody.appendChild(tr);

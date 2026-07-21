@@ -204,6 +204,16 @@
           <h2 class="glow-text text-cyan" style="font-size: 1.4rem; margin-top: 10px;">GLOBAL LEADERBOARD</h2>
           <p class="subtitle" style="font-size: 0.8rem; margin-bottom: 20px;">Top astronauts sorted by score and speed</p>
 
+          <!-- Dual-Mode Leaderboard Switcher -->
+          <div class="leaderboard-mode-switcher">
+            <button type="button" class="mode-btn active" id="btn-mode-first" onclick="switchLeaderboardMode('first')">
+              🥇 FIRST ATTEMPT CHAMPIONS
+            </button>
+            <button type="button" class="mode-btn" id="btn-mode-best" onclick="switchLeaderboardMode('best')">
+              🚀 BEST ATTEMPT MASTERS
+            </button>
+          </div>
+
           <div class="leaderboard-tabs">
             <button type="button" class="tab-btn active" id="login-tab-junior">JUNIOR</button>
             <button type="button" class="tab-btn" id="login-tab-senior">SENIOR</button>

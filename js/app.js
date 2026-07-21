@@ -1396,17 +1396,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function deduplicateAndSortLeaderboard(rawList) {
+  state.leaderboardMode = 'first'; // 'first' or 'best'
+  state.rawLeaderboard = { junior: [], senior: [] };
+
+  function deduplicateAndSortLeaderboard(rawList, mode) {
     if (!Array.isArray(rawList)) return [];
     
     // 1. Filter out cheaters
     const valid = rawList.filter(e => !e.cheated);
     
-    // 2. Group by normalized student name
     const studentMap = new Map();
     
     valid.forEach(entry => {
-      // Normalize name to catch slight typing variations: "Akshara. S" -> "aksharas"
       const nameKey = (entry.name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
       if (!nameKey) return;
       
@@ -1427,48 +1428,87 @@ document.addEventListener("DOMContentLoaded", () => {
         studentMap.set(nameKey, normalizedEntry);
       } else {
         const existing = studentMap.get(nameKey);
-        // Compare: Keep entry with higher singleScore. If tied, keep entry with FEWEST attempts!
         let replace = false;
-        if (normalizedEntry.score > existing.score) {
-          replace = true;
-        } else if (normalizedEntry.score === existing.score) {
-          if (normalizedEntry.attempted < existing.attempted) {
+        
+        if (mode === "first") {
+          // Keep entry with FEWEST attempts (Attempt #1 / earliest)
+          if (attempted < existing.attempted) {
+            replace = true;
+          } else if (attempted === existing.attempted && rawScore > existing.score) {
+            replace = true;
+          }
+        } else {
+          // "best" mode: Keep entry with HIGHEST score. If tied, keep fewest attempts!
+          if (rawScore > existing.score) {
+            replace = true;
+          } else if (rawScore === existing.score && attempted < existing.attempted) {
             replace = true;
           }
         }
+        
         if (replace) {
           studentMap.set(nameKey, normalizedEntry);
         }
       }
     });
     
-    // 3. Convert Map values to Array & Sort
     const uniqueStudents = Array.from(studentMap.values());
     
     uniqueStudents.sort((a, b) => {
-      // Primary: Score (Highest first)
-      if (b.score !== a.score) {
-        return b.score - a.score;
+      if (mode === "first") {
+        // First Attempt Mode: Primary is highest score among 1st attempts, then fewest attempts
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        if (a.attempted !== b.attempted) {
+          return a.attempted - b.attempted;
+        }
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      } else {
+        // Best Attempt Mode: Primary is highest score, then fewest attempts
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        if (a.attempted !== b.attempted) {
+          return a.attempted - b.attempted;
+        }
+        return new Date(a.timestamp) - new Date(b.timestamp);
       }
-      // Tie-breaker 1: Attempt Count (Fewest attempts first!)
-      if (a.attempted !== b.attempted) {
-        return a.attempted - b.attempted;
-      }
-      // Tie-breaker 2: Timestamp (Earlier submission first)
-      return new Date(a.timestamp) - new Date(b.timestamp);
     });
     
     return uniqueStudents;
   }
+
+  function processLeaderboardData() {
+    const mode = state.leaderboardMode || "first";
+    const juniorRaw = state.rawLeaderboard.junior || [];
+    const seniorRaw = state.rawLeaderboard.senior || [];
+    
+    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorRaw, mode).slice(0, 20);
+    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorRaw, mode).slice(0, 20);
+    
+    renderLeaderboardTable();
+  }
+
+  window.switchLeaderboardMode = (mode) => {
+    SoundFX.play('click');
+    state.leaderboardMode = mode;
+    
+    const btnFirst = document.getElementById("btn-mode-first");
+    const btnBest = document.getElementById("btn-mode-best");
+    if (btnFirst) btnFirst.classList.toggle("active", mode === "first");
+    if (btnBest) btnBest.classList.toggle("active", mode === "best");
+    
+    processLeaderboardData();
+  };
 
   function fetchLeaderboard(url) {
     fetch(url)
     .then(res => res.json())
     .then(data => {
       if (data.status === "success" && data.leaderboard) {
-        state.leaderboard.junior = deduplicateAndSortLeaderboard(data.leaderboard.junior || []).slice(0, 20);
-        state.leaderboard.senior = deduplicateAndSortLeaderboard(data.leaderboard.senior || []).slice(0, 20);
-        renderLeaderboardTable();
+        state.rawLeaderboard = data.leaderboard;
+        processLeaderboardData();
       } else {
         renderLeaderboardLocal();
       }
@@ -1511,10 +1551,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const juniorList = localData.filter(e => e.category === "junior");
     const seniorList = localData.filter(e => e.category === "senior");
     
-    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorList).slice(0, 20);
-    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorList).slice(0, 20);
-    
-    renderLeaderboardTable();
+    state.rawLeaderboard = { junior: juniorList, senior: seniorList };
+    processLeaderboardData();
   }
 
   function renderLeaderboardTable() {

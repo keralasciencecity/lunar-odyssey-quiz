@@ -1396,12 +1396,86 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function deduplicateAndSortLeaderboard(rawList) {
+    if (!Array.isArray(rawList)) return [];
+    
+    // 1. Filter out cheaters
+    const valid = rawList.filter(e => !e.cheated);
+    
+    // 2. Group by normalized student name
+    const studentMap = new Map();
+    
+    valid.forEach(entry => {
+      // Normalize name to catch slight typing variations: "Akshara. S" -> "aksharas"
+      const nameKey = (entry.name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+      if (!nameKey) return;
+      
+      let rawScore = Number(entry.score) || 0;
+      let attempted = Number(entry.attempted) || 1;
+      
+      // Normalize score if cumulative: a single quiz has 20 questions max.
+      let singleScore = rawScore;
+      if (singleScore > 20) {
+        let estimatedRuns = Math.max(1, Math.round(attempted / 12));
+        singleScore = Math.min(20, Math.round(rawScore / estimatedRuns));
+      }
+      singleScore = Math.min(20, Math.max(0, singleScore));
+      
+      const normalizedEntry = {
+        name: entry.name,
+        place: entry.place,
+        category: entry.category,
+        score: singleScore,
+        attempted: attempted,
+        cheated: !!entry.cheated,
+        timestamp: entry.timestamp || new Date().toISOString()
+      };
+      
+      if (!studentMap.has(nameKey)) {
+        studentMap.set(nameKey, normalizedEntry);
+      } else {
+        const existing = studentMap.get(nameKey);
+        // Compare: Keep entry with higher singleScore. If tied, keep entry with FEWEST attempts!
+        let replace = false;
+        if (normalizedEntry.score > existing.score) {
+          replace = true;
+        } else if (normalizedEntry.score === existing.score) {
+          if (normalizedEntry.attempted < existing.attempted) {
+            replace = true;
+          }
+        }
+        if (replace) {
+          studentMap.set(nameKey, normalizedEntry);
+        }
+      }
+    });
+    
+    // 3. Convert Map values to Array & Sort
+    const uniqueStudents = Array.from(studentMap.values());
+    
+    uniqueStudents.sort((a, b) => {
+      // Primary: Score (Highest first)
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      // Tie-breaker 1: Attempt Count (Fewest attempts first!)
+      if (a.attempted !== b.attempted) {
+        return a.attempted - b.attempted;
+      }
+      // Tie-breaker 2: Timestamp (Earlier submission first)
+      return new Date(a.timestamp) - new Date(b.timestamp);
+    });
+    
+    return uniqueStudents;
+  }
+
   function fetchLeaderboard(url) {
     fetch(url)
     .then(res => res.json())
     .then(data => {
       if (data.status === "success" && data.leaderboard) {
-        state.leaderboard = data.leaderboard;
+        state.leaderboard.junior = deduplicateAndSortLeaderboard(data.leaderboard.junior || []).slice(0, 10);
+        state.leaderboard.senior = deduplicateAndSortLeaderboard(data.leaderboard.senior || []).slice(0, 10);
         renderLeaderboardTable();
       } else {
         renderLeaderboardLocal();
@@ -1442,20 +1516,11 @@ document.addEventListener("DOMContentLoaded", () => {
       localData = [];
     }
     
-    // Filter non-cheaters
-    const valid = localData.filter(e => !e.cheated);
+    const juniorList = localData.filter(e => e.category === "junior");
+    const seniorList = localData.filter(e => e.category === "senior");
     
-    // Sort
-    valid.sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return new Date(a.timestamp) - new Date(b.timestamp);
-    });
-    
-    // Group
-    state.leaderboard.junior = valid.filter(e => e.category === "junior").slice(0, 10);
-    state.leaderboard.senior = valid.filter(e => e.category === "senior").slice(0, 10);
+    state.leaderboard.junior = deduplicateAndSortLeaderboard(juniorList).slice(0, 10);
+    state.leaderboard.senior = deduplicateAndSortLeaderboard(seniorList).slice(0, 10);
     
     renderLeaderboardTable();
   }

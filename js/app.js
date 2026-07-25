@@ -1411,8 +1411,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const studentMap = new Map();
     
     valid.forEach(entry => {
+      const rawPhone = String(entry.phone || entry.mobile || "").replace(/[^0-9]/g, "");
       const nameKey = (entry.name || "").toLowerCase().trim().replace(/[^a-z0-9]/g, "");
-      const uniqueKey = "name_" + nameKey;
+      const uniqueKey = (rawPhone && rawPhone.length >= 7) ? ("phone_" + rawPhone) : ("name_" + nameKey);
       if (!uniqueKey) return;
       
       let rawScore = Number(entry.score) || 0;

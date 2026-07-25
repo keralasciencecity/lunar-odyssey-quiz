@@ -76,12 +76,9 @@
           <div class="status-item"><span class="led led-cyan animate-pulse"></span> TELEM: ACTIVE</div>
         </div>
 
-        <p class="welcome-desc">Embark on a 2-minute lunar navigation mission. Answer as many questions as you can. Avoid changing tabs or exiting the browser window, as active AI/Anti-Cheat telemetric sensors are active.</p>
-        
-        <div class="login-tabs">
-          <button type="button" class="login-tab active" id="tab-show-register">PILOT REGISTRATION</button>
-          <button type="button" class="login-tab" id="tab-show-leaderboard">MISSION LEADERBOARD</button>
-        </div>
+        <p class="welcome-desc" style="font-size: 1.05rem; border: 1px solid rgba(251, 191, 36, 0.3); padding: 14px; border-radius: 8px; background: rgba(251, 191, 36, 0.05); color: #fef08a; line-height: 1.5; margin-bottom: 20px;">
+          🎉 <strong>CHAMPIONSHIP CONCLUDED:</strong> The Moon Day Online Quiz 2026 has officially completed! We extend our warmest thanks to all participants for logging their telemetry coordinates and demonstrating outstanding science knowledge.
+        </p>
         
         <!-- Registration & Significance View -->
         <div id="login-register-view" style="width: 100%">
@@ -126,81 +123,27 @@
                 On <strong>July 20, 1969</strong>, humanity achieved the impossible. The Apollo 11 Lunar Module, <em>Eagle</em>, landed on the Sea of Tranquility. Neil Armstrong and Buzz Aldrin took the historic first footsteps on another celestial world, declaring: <em>"That's one small step for man, one giant leap for mankind."</em>
               </p>
               <p class="significance-text">
-                Today, as India's <strong>Chandrayaan</strong> missions search for water ice at the South Pole and NASA's <strong>Artemis</strong> program prepares to establish a permanent lunar base, July 20 serves as a reminder of our cosmic curiosity. Science City Kottayam and Aastro Kerala Kottayam Chapter invite you to test your space science navigation coordinates in this championship!
+                July 20 is celebrated globally to honor this milestone of cosmic exploration, inspiration, and scientific progress. Today, as India's <strong>Chandrayaan</strong> missions reveal water ice resources at the lunar south pole and NASA's <strong>Artemis</strong> program prepares to send the next generation of astronauts back to the Moon, this day serves as a powerful reminder of human ingenuity and space science discovery.
               </p>
             </div>
           </details>
 
-          <form id="login-form" novalidate>
-            <div class="input-grid">
-              <div class="input-group">
-                <label for="input-name">Full Name</label>
-                <input type="text" id="input-name" required placeholder="Enter your full name">
-                <span class="error-msg" id="err-name">Name is required</span>
-              </div>
-              
-              <div class="input-group">
-                <label for="input-email">Email Address</label>
-                <input type="email" id="input-email" required placeholder="name@example.com">
-                <span class="error-msg" id="err-email">Valid email is required</span>
-              </div>
-
-              <div class="input-group">
-                <label for="input-phone">Phone Number</label>
-                <input type="tel" id="input-phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}">
-                <span class="error-msg" id="err-phone">Valid 10-digit number is required</span>
-              </div>
-
-              <div class="input-group">
-                <label for="input-place">Place / School / Organization</label>
-                <input type="text" id="input-place" required placeholder="e.g. Kottayam">
-                <span class="error-msg" id="err-place">Place or Institution is required</span>
-              </div>
+          <!-- Concluded/Appreciation Card -->
+          <div class="appreciation-card glass-panel" style="margin-top: 20px; padding: 25px; border: 1px dashed rgba(6, 182, 212, 0.4); text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 12px;">🏆</div>
+            <h2 class="glow-text text-cyan" style="font-size: 1.4rem; margin-bottom: 10px;">MISSION ACCOMPLISHED</h2>
+            <p style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.6; margin-bottom: 15px;">
+              The Moon Day Online Quiz 2026 has concluded. Ranks and telemetry records have been locked. You can browse the final verified rankings on the leaderboard below.
+            </p>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px;">
+              Organized by:<br>
+              <strong style="color: var(--neon-cyan);">Science City Kottayam</strong> & <strong style="color: var(--neon-cyan);">Aastro Kerala Kottayam Chapter</strong>
             </div>
-
-            <div class="category-section">
-              <label class="section-label">Select Age Category</label>
-              <div class="category-cards">
-                <label class="category-card" for="cat-junior">
-                  <input type="radio" name="category" id="cat-junior" value="junior" checked>
-                  <div class="card-content">
-                    <div class="card-icon">🚀</div>
-                    <div class="card-title">JUNIOR</div>
-                    <div class="card-age">Age 15 & Under</div>
-                    <div class="card-desc">Basic facts, Apollo 11, and Chandrayaan missions.</div>
-                  </div>
-                </label>
-                
-                <label class="category-card" for="cat-senior">
-                  <input type="radio" name="category" id="cat-senior" value="senior">
-                  <div class="card-content">
-                    <div class="card-icon">🛰️</div>
-                    <div class="card-title">SENIOR</div>
-                    <div class="card-age">Age 16 & Above</div>
-                    <div class="card-desc">Advanced astrophysics, history, and orbital science.</div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <div class="terms-group">
-              <label class="checkbox-container">
-                <input type="checkbox" id="agree-rules" required>
-                <span class="checkmark"></span>
-                I agree to the rules: No tab switching, no external aid. I understand my score will be disqualified if cheating is detected.
-              </label>
-              <span class="error-msg" id="err-rules">You must agree to the rules to start.</span>
-            </div>
-
-            <button type="submit" class="btn-primary" id="btn-start">
-              <span class="btn-text">LAUNCH MISSION</span>
-              <span class="btn-glow"></span>
-            </button>
-          </form>
+          </div>
         </div>
-
+        
         <!-- Leaderboard View -->
-        <div id="login-leaderboard-view" class="display-none" style="width: 100%">
+        <div id="login-leaderboard-view" style="width: 100%; margin-top: 30px;">
           <h2 class="glow-text text-cyan" style="font-size: 1.4rem; margin-top: 10px;">GLOBAL LEADERBOARD</h2>
           <p class="subtitle" style="font-size: 0.8rem; margin-bottom: 20px;">Top astronauts sorted by score and speed</p>
 

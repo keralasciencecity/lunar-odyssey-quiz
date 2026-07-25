@@ -1613,36 +1613,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderLeaderboardTable();
   };
 
-  // Bind landing page tabs
-  const tabShowRegister = document.getElementById("tab-show-register");
-  const tabShowLeaderboard = document.getElementById("tab-show-leaderboard");
-  const registerView = document.getElementById("login-register-view");
-  const leaderboardView = document.getElementById("login-leaderboard-view");
-  
-  if (tabShowRegister && tabShowLeaderboard) {
-    tabShowRegister.addEventListener("click", () => {
-      SoundFX.play('click');
-      tabShowRegister.classList.add("active");
-      tabShowLeaderboard.classList.remove("active");
-      registerView.classList.remove("display-none");
-      leaderboardView.classList.add("display-none");
-    });
-    
-    tabShowLeaderboard.addEventListener("click", () => {
-      SoundFX.play('click');
-      tabShowLeaderboard.classList.add("active");
-      tabShowRegister.classList.remove("active");
-      registerView.classList.add("display-none");
-      leaderboardView.classList.remove("display-none");
-      
-      // Fetch latest scores
-      const apiURL = window.QUIZ_CONFIG.GOOGLE_SHEETS_URL;
-      if (apiURL) {
-        fetchLeaderboard(apiURL);
-      } else {
-        renderLeaderboardLocal();
-      }
-    });
+  // Fetch remote leaderboard automatically on load
+  const apiURL = window.QUIZ_CONFIG.GOOGLE_SHEETS_URL;
+  if (apiURL) {
+    fetchLeaderboard(apiURL);
+  } else {
+    renderLeaderboardLocal();
   }
 
   // Category switching on landing page leaderboard
@@ -1859,6 +1835,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  // Load local rankings on start
-  renderLeaderboardLocal();
 });

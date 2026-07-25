@@ -127,15 +127,7 @@ function doGet(e) {
       var rawPhone = String(row[3] || "").replace(/[^0-9]/g, "");
       var nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, "");
       
-      // Strict unique identification by Phone or Email
-      var uniqueKey = "";
-      if (rawPhone && rawPhone.length >= 7) {
-        uniqueKey = "phone_" + rawPhone;
-      } else if (email && email.indexOf("@") !== -1) {
-        uniqueKey = "email_" + email;
-      } else {
-        uniqueKey = "name_" + nameKey;
-      }
+      var uniqueKey = "name_" + nameKey;
       
       var place = String(row[4] || "").trim();
       var category = String(row[5] || "").toLowerCase().trim();

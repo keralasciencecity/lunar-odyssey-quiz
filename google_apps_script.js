@@ -2,23 +2,16 @@
  * Google Apps Script for Moon Day Quiz Database Backend
  * 
  * INSTRUCTIONS:
- * 1. Create a new Google Sheet.
+ * 1. Open your Google Sheet.
  * 2. Click "Extensions" -> "Apps Script".
- * 3. Delete any code in the editor and paste this code.
- * 4. Run the `setupSheet` function once by selecting it from the dropdown and clicking "Run" (to authorize and set up headers).
- * 5. Click "Deploy" (top right) -> "New deployment".
- * 6. Select type "Web app".
- * 7. Set:
- *    - Description: "Moon Day Quiz API"
- *    - Execute as: "Me" (your email)
- *    - Who has access: "Anyone" (this is CRITICAL for it to work without login).
- * 8. Click "Deploy", copy the Web App URL, and paste it into `js/config.js` as the `GOOGLE_SHEETS_URL`.
+ * 3. Replace the entire code with this script.
+ * 4. Select `setupSheet` from the dropdown and click "Run" to initialize.
+ * 5. Click "Deploy" (top right) -> "New deployment" -> Web App.
+ * 6. Set Who has access: "Anyone".
  */
 
 function setupSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Set up Submissions sheet
   var subSheet = ss.getSheetByName("Submissions") || ss.insertSheet("Submissions");
   var headers = [
     "Timestamp", 
@@ -36,12 +29,9 @@ function setupSheet() {
     "User Agent"
   ];
   
-  // Clear any existing headers and write new ones
   subSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   subSheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#d9ead3");
   subSheet.setFrozenRows(1);
-  
-  Logger.log("Setup complete! Please deploy this script as a Web App with access set to 'Anyone'.");
 }
 
 function doPost(e) {
@@ -74,10 +64,8 @@ function doPost(e) {
     var cheated = data.cheated ? "Yes" : "No";
     var cheatCount = Number(data.cheatCount) || 0;
     var userAgent = data.userAgent || "";
-    
     var accuracy = attempted > 0 ? Math.round((score / attempted) * 100) : 0;
     
-    // Append row to sheet
     sheet.appendRow([
       timestamp,
       name,
@@ -94,13 +82,9 @@ function doPost(e) {
       userAgent
     ]);
     
-    // Fetch updated leaderboard to return to client immediately
-    var leaderboard = getLeaderboard();
-    
     result = { 
       status: "success", 
-      message: "Score submitted successfully", 
-      leaderboard: leaderboard 
+      message: "Score submitted successfully"
     };
   } catch (err) {
     result = { status: "error", message: err.toString() };
@@ -111,65 +95,111 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  var leaderboard = getLeaderboard();
-  return ContentService.createTextOutput(JSON.stringify({ status: "success", leaderboard: leaderboard }))
-                        .setMimeType(ContentService.MimeType.JSON);
-}
-
-/**
- * Helper to fetch top scores from the sheet
- * Groups into Junior and Senior leaderboards, sorted by Score (descending) and then Timestamp (ascending)
- */
-function getLeaderboard() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Submissions");
-  var leaderboard = { junior: [], senior: [] };
-  
-  if (!sheet) return leaderboard;
-  
-  var rows = sheet.getDataRange().getValues();
-  if (rows.length <= 1) return leaderboard; // Only headers
-  
-  var entries = [];
-  // Start from index 1 to skip header row
-  for (var i = 1; i < rows.length; i++) {
-    var row = rows[i];
-    entries.push({
-      timestamp: row[0],
-      name: row[1],
-      place: row[4],
-      category: (row[5] || "").toLowerCase(),
-      score: Number(row[6]) || 0,
-      attempted: Number(row[7]) || 0,
-      cheated: row[10] === "Yes"
-    });
-  }
-  
-  // Filter out entries that cheated, if desired. Let's keep non-cheated scores on the leaderboard
-  var validEntries = entries.filter(function(entry) {
-    return !entry.cheated;
-  });
-  
-  // Sort: highest score first, then quickest (earlier timestamp)
-  validEntries.sort(function(a, b) {
-    if (b.score !== a.score) {
-      return b.score - a.score;
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheets = ss.getSheets();
+    var sheet = sheets[0];
+    for (var k = 0; k < sheets.length; k++) {
+      if (sheets[k].getLastRow() > 1) {
+        sheet = sheets[k];
+        break;
+      }
     }
-    return new Date(a.timestamp) - new Date(b.timestamp);
-  });
-  
-  // Extract top 10 for Junior
-  var juniorTop = validEntries.filter(function(e) { return e.category === "junior"; }).slice(0, 10);
-  // Extract top 10 for Senior
-  var seniorTop = validEntries.filter(function(e) { return e.category === "senior"; }).slice(0, 10);
-  
-  leaderboard.junior = juniorTop.map(function(e) {
-    return { name: e.name, place: e.place, score: e.score, attempted: e.attempted };
-  });
-  
-  leaderboard.senior = seniorTop.map(function(e) {
-    return { name: e.name, place: e.place, score: e.score, attempted: e.attempted };
-  });
-  
-  return leaderboard;
+    
+    var MIN_ACCURACY_PERCENT = 45; // Minimum 45% accuracy
+    var MAX_HUMAN_ATTEMPTS = 80;    // Max 80 questions in 2 mins
+    
+    var rows = sheet.getDataRange().getValues();
+    var juniorFirstMap = {};
+    var juniorBestMap = {};
+    var seniorFirstMap = {};
+    var seniorBestMap = {};
+    
+    for (var i = 1; i < rows.length; i++) {
+      var row = rows[i];
+      if (!row || row.length < 8) continue;
+      
+      var name = String(row[1] || "").trim();
+      if (!name || name.toLowerCase() === "name" || name.toLowerCase() === "full name") continue;
+      
+      var email = String(row[2] || "").toLowerCase().trim();
+      var rawPhone = String(row[3] || "").replace(/[^0-9]/g, "");
+      var nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+      
+      // Strict unique identification by Phone or Email
+      var uniqueKey = "";
+      if (rawPhone && rawPhone.length >= 7) {
+        uniqueKey = "phone_" + rawPhone;
+      } else if (email && email.indexOf("@") !== -1) {
+        uniqueKey = "email_" + email;
+      } else {
+        uniqueKey = "name_" + nameKey;
+      }
+      
+      var place = String(row[4] || "").trim();
+      var category = String(row[5] || "").toLowerCase().trim();
+      if (category !== "senior") category = "junior";
+      
+      var score = Number(row[6]) || 0;
+      var attempted = Number(row[7]) || 1;
+      if (attempted < 1) attempted = 1;
+      
+      var accuracy = Math.round((score / attempted) * 100);
+      if (isNaN(accuracy) || accuracy > 100) accuracy = 100;
+      
+      // Filter out spammers
+      if (accuracy < MIN_ACCURACY_PERCENT) continue;
+      if (attempted > MAX_HUMAN_ATTEMPTS) continue;
+      
+      var entry = { 
+        name: name, 
+        place: place, 
+        category: category, 
+        score: score, 
+        attempted: attempted,
+        accuracy: accuracy,
+        timestamp: row[0]
+      };
+      
+      var firstMap = (category === "senior") ? seniorFirstMap : juniorFirstMap;
+      var bestMap = (category === "senior") ? seniorBestMap : juniorBestMap;
+      
+      // 1st Attempt: Chronologically FIRST logged row ever for this unique key
+      if (!firstMap[uniqueKey]) {
+        firstMap[uniqueKey] = entry;
+      }
+      
+      // Best Attempt: Keep highest score overall
+      if (!bestMap[uniqueKey] || score > bestMap[uniqueKey].score || (score === bestMap[uniqueKey].score && accuracy > bestMap[uniqueKey].accuracy)) {
+        bestMap[uniqueKey] = entry;
+      }
+    }
+    
+    function sortMap(map) {
+      var list = Object.values(map);
+      list.sort(function(a, b) {
+        if (b.score !== a.score) return b.score - a.score;
+        if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+        return a.attempted - b.attempted;
+      });
+      return list.slice(0, 20);
+    }
+    
+    var result = {
+      status: "success",
+      leaderboard: {
+        juniorFirst: sortMap(juniorFirstMap),
+        juniorBest: sortMap(juniorBestMap),
+        seniorFirst: sortMap(seniorFirstMap),
+        seniorBest: sortMap(seniorBestMap),
+        junior: sortMap(juniorFirstMap),
+        senior: sortMap(seniorBestMap)
+      }
+    };
+    
+    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }

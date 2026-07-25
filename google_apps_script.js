@@ -114,6 +114,7 @@ function doGet(e) {
     var juniorBestMap = {};
     var seniorFirstMap = {};
     var seniorBestMap = {};
+    var attemptsCountMap = {};
     
     for (var i = 1; i < rows.length; i++) {
       var row = rows[i];
@@ -139,6 +140,12 @@ function doGet(e) {
       var place = String(row[4] || "").trim();
       var category = String(row[5] || "").toLowerCase().trim();
       if (category !== "senior") category = "junior";
+      
+      // Count attempts BEFORE filters
+      if (!attemptsCountMap[uniqueKey]) {
+        attemptsCountMap[uniqueKey] = { name: name, place: place, category: category, count: 0 };
+      }
+      attemptsCountMap[uniqueKey].count++;
       
       var score = Number(row[6]) || 0;
       var attempted = Number(row[7]) || 1;
@@ -185,6 +192,12 @@ function doGet(e) {
       return list.slice(0, 20);
     }
     
+    var attemptsList = Object.values(attemptsCountMap);
+    attemptsList.sort(function(a, b) {
+      return b.count - a.count;
+    });
+    var topAttempts = attemptsList.slice(0, 20);
+    
     var result = {
       status: "success",
       leaderboard: {
@@ -193,7 +206,8 @@ function doGet(e) {
         seniorFirst: sortMap(seniorFirstMap),
         seniorBest: sortMap(seniorBestMap),
         junior: sortMap(juniorFirstMap),
-        senior: sortMap(seniorBestMap)
+        senior: sortMap(seniorBestMap),
+        mostAttempts: topAttempts
       }
     };
     

@@ -438,16 +438,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return isValid;
   }
 
-  // Clear errors dynamically on input
-  loginForm.querySelectorAll("input").forEach(input => {
-    input.addEventListener("input", () => {
-      if (input.type === "checkbox") {
-        input.parentElement.parentElement.classList.remove("invalid");
-      } else {
-        input.parentElement.classList.remove("invalid");
-      }
+  if (loginForm) {
+    loginForm.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", () => {
+        if (input.type === "checkbox") {
+          input.parentElement.parentElement.classList.remove("invalid");
+        } else {
+          input.parentElement.classList.remove("invalid");
+        }
+      });
     });
-  });
+  }
 
   // --- ANTI-CHEAT DETECTORS ---
   function showCheatWarning() {
@@ -507,22 +508,24 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- QUIZ GAME ENGINE ---
-  loginForm.addEventListener("submit", e => {
-    e.preventDefault();
-    
-    if (!validateForm() && !window.QUIZ_CONFIG.DEBUG_MODE) return;
-    
-    // Save user info
-    state.user.name = document.getElementById("input-name").value.trim();
-    state.user.email = document.getElementById("input-email").value.trim();
-    state.user.phone = document.getElementById("input-phone").value.trim();
-    state.user.place = document.getElementById("input-place").value.trim();
-    
-    const selectedCategory = document.querySelector('input[name="category"]:checked').value;
-    state.user.category = selectedCategory;
-    
-    startQuiz();
-  });
+  if (loginForm) {
+    loginForm.addEventListener("submit", e => {
+      e.preventDefault();
+      
+      if (!validateForm() && !window.QUIZ_CONFIG.DEBUG_MODE) return;
+      
+      // Save user info
+      state.user.name = document.getElementById("input-name").value.trim();
+      state.user.email = document.getElementById("input-email").value.trim();
+      state.user.phone = document.getElementById("input-phone").value.trim();
+      state.user.place = document.getElementById("input-place").value.trim();
+      
+      const selectedCategory = document.querySelector('input[name="category"]:checked').value;
+      state.user.category = selectedCategory;
+      
+      startQuiz();
+    });
+  }
 
   function startQuiz() {
     // Initialize Quiz Stats
